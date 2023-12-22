@@ -50,6 +50,11 @@ export default class CognitoAuthenticator extends Base {
     }
   }
 
+  async _handleMFA({ state: { user, totp_code } }) {
+    await this.auth.confirmSignIn(user, totp_code, 'SOFTWARE_TOKEN_MFA');
+    return this._resolveAuth(user)
+  }
+
   async _handleNewPasswordRequired({ password, state: { user } }) {
     const user2 = await this.auth.completeNewPassword(user, password);
     return this._handleSignIn(user2);
@@ -74,6 +79,8 @@ export default class CognitoAuthenticator extends Base {
       return this._handleRefresh();
     } else if (name === 'newPasswordRequired') {
       return this._handleNewPasswordRequired(params);
+    } else if (name === 'SOFTWARE_TOKEN_MFA') {
+      return this._handleMFA(params);
     } else {
       throw new Error('invalid state');
     }

@@ -155,4 +155,33 @@ export default class CognitoService extends Service {
     set(this, 'user', user);
     return user;
   }
+
+  async setupTOTP() {
+    try {
+      const totpSetupDetails = await this.auth.setupTOTP(this.auth.user);
+      const code = `otpauth://totp/AWSCognito:${this.auth.user.username}?secret=${totpSetupDetails}&issuer=AWSCognito`;
+      return code
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
+  async handleTOTPVerification(code) {
+    try {
+      await this.auth.verifyTotpToken(this.auth.user, code);
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
+  async handleUpdateMFAPreference() {
+    try {
+      await this.auth.setPreferredMFA(this.auth.user, 'TOTP');
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
 }
