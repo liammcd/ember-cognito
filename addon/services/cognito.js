@@ -184,4 +184,14 @@ export default class CognitoService extends Service {
       console.log(err);
     }
   }
+
+  async rememberDevice() {
+    try {
+      await this.auth.rememberDevice();
+    }
+    catch(err) {
+      console.log(err);
+    }
+  }
+
 }
